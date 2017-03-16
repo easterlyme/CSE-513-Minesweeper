@@ -1,0 +1,15 @@
+{
+    "version": "0.1.0",
+    "command": "java",
+    "isShellCommand": true,
+    "args": ["-jar", "pgms.jar"],
+    "showOutput": "always",
+    "echoCommand": true,
+    "suppressTaskName": true,
+    "tasks": [
+        {
+            "taskName": "EqnStrategy",
+            "args": ["-b", "-s", "eqn.EqnStrategy"]
+        }
+    ]
+}

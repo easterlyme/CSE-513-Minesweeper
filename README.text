@@ -1,0 +1,45 @@
+Programmer's Minesweeper
+John D. Ramsdell
+August 1995
+
+Programmer's Minesweeper (PGMS) is a game based on the Minesweeper game
+delivered with most Microsoft Windows operating systems.  In that
+game, a grid of cells is presented to the player.  If the player
+probes a cell with a mine, the game is lost.  If the player
+probes a cell without a mine, the player learns the number of mines
+that are adjecent to the probed cell.  This information can often be
+used to choose another cell for probing without fear it has a mine.
+The game is won when every cell without a mine has been probed.
+
+In this version of Minesweeper, the player supplies a Java program
+that implements a strategy for winning a Minesweeper game.  The
+strategy can be tested by running PGMS as an application while giving
+the class name of the strategy as a command line argument.
+Alternatively, PGMS can be used as an applet to produce an animation
+of the strategy applied to a randomly selected game.
+
+To run the program without the script:
+
+	java -jar pgms.jar
+
+To make the start up script type:
+
+	make pgms
+
+To run the program type:
+	
+	./pgms
+
+To get the usage message type:
+
+	./pgms -help
+
+To build the program, type:
+
+	java -jar jmk.jar -f src/makefile.jmk
+
+The documentation for jmk (Make in Java) is in its jar file.
+
+See src/COPYING.text for copyright information.
+
+John

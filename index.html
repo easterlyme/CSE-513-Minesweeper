@@ -1,0 +1,69 @@
+<!-- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"> -->
+<HTML>
+<HEAD>
+<TITLE> Programmer's Minesweeper </TITLE>
+</HEAD>
+<BODY bgcolor="white">
+<h1> Programmer's Minesweeper </h1>
+
+Programmer's Minesweeper (PGMS) is a game based on the Minesweeper
+game delivered with most Microsoft Windows operating systems.  In that
+game, a grid of cells is presented to the player.  If the player
+probes a cell with a mine, the game is lost.  If the player probes a
+cell without a mine, the player learns the number of mines that are
+adjecent to the probed cell.  This information can often be used to
+choose another cell for probing without fear it has a mine.  The game
+is won when every cell without a mine has been probed.
+<p>
+
+In this version of Minesweeper, a <a
+href="http://java.sun.com">Java</a> program plays the game.
+Minesweeper players sometimes enjoy watching the computer play an <a
+href="eqnexpert.html">expert</a> game, and learn to use some of its
+tricks. <p>
+
+Programmer's Minesweeper has been designed so that Java programmers
+can easily implement their own strategy for winning a Minesweeper
+game.  A very simple strategy has been implemented called the <a
+href="doc/sp.SinglePointStrategy.html">Single Point Strategy.</a>
+Click on the start button in the mine map below to see it play a
+beginner game.  A yellow cell indicates a mine with a location unknown
+to the strategy, a blue cell indicates a mine correctly marked by the
+strategy, a red cell indicates an exploded mine, and a black cell
+indicates an incorrectly marked cell.
+
+<HR>
+<applet archive="pgms.jar" code="map/PGMS.class"
+	width=311 height=225>
+<em>The dynamic behavior of this applet is only available to users of Java
+aware browsers.</em>
+</applet>
+<br>
+<strong>Key:</strong>
+yellow: hidden mine,
+blue: marked mine,
+red: probed mine,
+black: marked emply cell.
+
+<HR>
+<ul>
+<li><a href="eqnexpert.html">See the author's
+best strategy play an expert game.</a>
+<li><a href="games.html">More games and strategies</a>
+<li><a href="doc/packages.html">Modules used in PGMS</a>
+<li><a href="rules.html">Instructions for programmers</a>
+</ul>
+
+<hr>
+<address>
+<a href="pgms.zip">
+A Zip archive of the complete sources</a>
+<br>
+<a href="gpl.html">
+Copyright</a>
+<br>
+<a href="mailto:ramsdell@ccs.neu.edu">
+John D. Ramsdell</a> 
+</address>
+</BODY>
+</HTML>
