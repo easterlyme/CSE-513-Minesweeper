@@ -56,6 +56,8 @@ public final class VoteStrategy implements Strategy {
 
 	void Reveal(int x, int y, Map m) {
 		int q = m.probe(x,y);
+		if(q == Map.BOOM)
+			return;
 		if(q == 0) {
 			RevealSurrounding(x,y,m);
 		} else {
@@ -138,7 +140,7 @@ public final class VoteStrategy implements Strategy {
 		for(int y = height -1 ; y >= 0; y --) {
 			for(int x = 0; x < width; x ++) {
 				if(voteFringe.contains(board[x][y])) {
-					System.out.print(board[x][y].getScore() + " ");
+					System.out.print((int)(board[x][y].getScore() * 8) + " ");
 				} else if (fringe.contains(board[x][y])) {
 					System.out.print("! ");
 				} else {
@@ -157,7 +159,7 @@ public final class VoteStrategy implements Strategy {
 		Tile(int xPos, int yPos) {
 			x = xPos;
 			y = yPos;
-			votes = 0;
+			votes = 1;
 			score = 0;
 		}
 
