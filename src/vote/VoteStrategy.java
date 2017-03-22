@@ -134,8 +134,18 @@ public final class VoteStrategy implements Strategy {
 				Reveal(guess.x, guess.y, m);
 			}
 		}
-		for(Tile t: voteFringe)
-			System.out.print(t.getScore() + " ");
+		for(int y = height -1 ; y >= 0; y --) {
+			for(int x = 0; x < width; x ++) {
+				if(voteFringe.contains(board[x][y])) {
+					System.out.print(board[x][y].getScore() + " ");
+				} else if (fringe.contains(board[x][y])) {
+					System.out.print("! ");
+				} else {
+					System.out.print("? ");
+				}
+			}
+			System.out.println();
+		}
 	}
 
 	class Tile {
@@ -160,7 +170,7 @@ public final class VoteStrategy implements Strategy {
 		}
 
 		void Reset() {
-			votes = 0;
+			votes = 1;
 			score = 0;
 		}
 	}
