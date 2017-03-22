@@ -98,6 +98,7 @@ public final class VoteStrategy implements Strategy {
 			for(;x < t.x + 1 && x < width; x++) {
 				for(;y < t.y + 1 && y < height; y++) {
 					if(m.look(x,y) == Map.UNPROBED){
+						System.out.println("Voting on x: " + x + " y: " + y );
 						board[x][y].Vote(score);
 					}
 				}
