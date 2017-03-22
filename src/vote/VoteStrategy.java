@@ -7,48 +7,61 @@ package vote;
 
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 import map.Strategy;
 import map.Map;
 
 public final class VoteStrategy implements Strategy {
 
-	private ArrayList<Voter> fringe;
-	private Voter[] voters;
 	private int width;
 	private int height;
 
+	private ArrayList<Tile> fringe;
+	private int[] votes;
+
 	void initialize(Map m) {
-		fringe = new ArrayList<Voter>();//initialize an empty fringe
 		width = m.columns();
 		height = m.rows();
-		voters = new Voter[width * height];
+		fringe = new ArrayList<Tile>();
+		votes = new int[height * width];
 		for (int i = 0; i < width; i++) {
 			for(int j = 0; j < height; j++) {
-				voters[j * width + i] = new Voter(i,j);
+				votes[i * height + j] = 1000;
 			}
 		}
 	}
 
-	void VotePhase() {
-		for(Voter v: fringe) {
-			v.Cast();
-		}
-	}
-
-	/**
-	 * @return false when unable to choose
-	 */
-	boolean ChoosePhase(Map m) {
-		return false;
-	}
-
-	boolean ChooseRandom(Map m) {
+	void ChooseRandom(Map m) {
 		int x = m.pick(width);
 		int y = m.pick(height);
 		int q = m.probe(x,y);
-		fringe.add(voters[x * width + y]);
-		return true;
+		if(q == 0) {
+			RevealSurrounding(x,y,m);	
+		} else {
+			fringe.add(new Tile(x,y));
+		}
+	}
+
+	void RevealSurrounding(int x,int y, Map m) {
+		int q;
+		for(int i = x - 1; i <= x + 1 ; i++) {
+			for(int j = y - 1; j <= y + 1 ; j++) {
+				if(i == x && j == y) {
+					continue;
+				}
+				q = m.look(i,j);
+				if(q == Map.UNPROBED) {
+					q = m.probe(i,j);
+					if(q == 0) {
+						RevealSurrounding(i,j,m);
+					} else {
+						fringe.add(new Tile(i,j));
+					}
+				}
+			}
+		}
+	}
+
+	void Vote() {
 	}
 
 	/**
@@ -58,11 +71,18 @@ public final class VoteStrategy implements Strategy {
 	public void play(Map m) {
 		initialize(m);
 		ChooseRandom(m);
-		while(!m.done()) { //until the game is over
-			VotePhase();
-			if(!ChoosePhase(m)) { //Failure to Choose, implement guess strategy
-				ChooseRandom(m);
-			}
+		while(!m.done()) {
+			
+			ChooseRandom(m);
+		}
+	}
+
+	class Tile {
+		int x;
+		int y;
+		Tile(int xPos, int yPos) {
+			x = xPos;
+			y = yPos;
 		}
 	}
 }
