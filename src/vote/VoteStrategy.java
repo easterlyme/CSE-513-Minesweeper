@@ -55,14 +55,14 @@ public final class VoteStrategy implements Strategy {
 	}
 
 	void Reveal(int x, int y, Map m) {
+		voteFringe.remove(board[x][y]);
+		fringe.add(board[x][y]);
 		int q = m.probe(x,y);
 		if(q == Map.BOOM)
 			return;
 		if(q == 0) {
 			RevealSurrounding(x,y,m);
 		} else {
-			voteFringe.remove(board[x][y]);
-			fringe.add(board[x][y]);
 			for(int i = x - 1; i <= x + 1; i++) {
 				for(int j = y - 1; j <= y+1; j++) {
 					if(m.look(i,j) == Map.UNPROBED && !voteFringe.contains(board[i][j])) {
@@ -87,7 +87,7 @@ public final class VoteStrategy implements Strategy {
 			int unprobed = 0;
 			for(;i < t.x + 1 && i < width; i++) {
 				for(;j < t.x + 1 && j < height; j++) {
-					if(m.look(i,j) == Map.UNPROBED){
+					if(m.look(i,j) == Map.UNPROBED || m.look(i,j) == Map.MARKED){
 						unprobed++;//counting unprobed neighbors
 					}
 				}
@@ -96,12 +96,17 @@ public final class VoteStrategy implements Strategy {
 				iFringe.remove();
 				continue;
 			}
-			double score = 1 - m.look(t.x,t.y) / unprobed;
-			for(;x < t.x + 1 && x < width; x++) {
-				for(;y < t.y + 1 && y < height; y++) {
+			double score = 1.0 - (m.look(t.x,t.y) / (double)unprobed);
+			System.out.println("Score: " + score + "\tNeighbors: " + unprobed);
+			for(;x <= t.x + 1 && x < width; x++) {
+				for(;y <= t.y + 1 && y < height; y++) {
 					if(m.look(x,y) == Map.UNPROBED){
-						System.out.println("Voting on x: " + x + " y: " + y );
-						board[x][y].Vote(score);
+						if(score <= 5e-5) {//around me is bombs
+							m.mark(x,y);
+							voteFringe.remove(board[x][y]);//Clean up the vote fringe since i marked it as a bomb
+						} else {
+							board[x][y].Vote(score);
+						}
 					}
 				}
 			}
@@ -128,19 +133,17 @@ public final class VoteStrategy implements Strategy {
 		while(!m.done()) {
 			VotePhase(m);
 			Tile guess = ChooseBest();
-			System.out.println(guess.getScore());
-			if(guess.getScore() < 0.2) {
+			if(guess.getScore() < 0.3) {
 				ChooseRandom(m);
 			} else {
-				//Remove from votefringe
-				voteFringe.remove(guess);
+				System.out.println("Chose: " + guess.getScore());
 				Reveal(guess.x, guess.y, m);
 			}
 		}
 		for(int y = height -1 ; y >= 0; y --) {
 			for(int x = 0; x < width; x ++) {
 				if(voteFringe.contains(board[x][y])) {
-					System.out.print((int)(board[x][y].getScore() * 8) + " ");
+					System.out.printf("%.1f ",board[x][y].getScore());
 				} else if (fringe.contains(board[x][y])) {
 					System.out.print("! ");
 				} else {
@@ -173,7 +176,7 @@ public final class VoteStrategy implements Strategy {
 		}
 
 		void Reset() {
-			votes = 1;
+			votes = 0;
 			score = 0;
 		}
 	}
