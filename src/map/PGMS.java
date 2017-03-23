@@ -169,18 +169,22 @@ public class PGMS extends Applet {
 	System.out.println(e.toString());
       }
       if (m.won()) wins++;	// Record results
-      if (m.probed()) probed++;
-      System.out.print(wins
-		       + " wins in "
-		       + n
-		       + " tries -- "
-		       + percent(wins, n));
-      if (probed > 0)
-	System.out.print("%, with "
-			 + probed
-			 + " standard tries -- "
-			 + percent(wins, probed));
-      System.out.println("%.");
+      if (m.probed())
+          probed++;
+
+      if(n % 1000 == 0){
+          System.out.print(wins
+                  + " wins in "
+                  + n
+                  + " tries -- "
+                  + percent(wins, n));
+          if (probed > 0)
+              System.out.print("%, with "
+                      + probed
+                      + " standard tries -- "
+                      + percent(wins, probed));
+          System.out.println("%.");
+      }
     }
   }
 
