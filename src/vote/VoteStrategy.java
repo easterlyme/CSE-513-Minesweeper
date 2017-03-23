@@ -83,7 +83,7 @@ public final class VoteStrategy implements Strategy {
 			Tile t = iFringe.next();
 			unprobed = 0;
 			for(int i = t.x - 1;i <= t.x + 1; i++) {
-				for(int j = t.y - 1;j <= t.x + 1; j++) {
+				for(int j = t.y - 1;j <= t.y + 1; j++) {
 					if(m.look(i,j) == Map.UNPROBED || m.look(i,j) == Map.MARKED){
 						unprobed++;//counting unprobed neighbors
 					}
@@ -94,7 +94,6 @@ public final class VoteStrategy implements Strategy {
 				continue;
 			}
 			double score = 1.0 - (m.look(t.x,t.y) / (double)unprobed);
-			System.out.println("Score: " + score + "\tNeighbors: " + unprobed);
 			for(int x = t.x - 1;x <= t.x + 1; x++) {
 				for(int y = t.y - 1;y <= t.y + 1; y++) {
 					if(m.look(x,y) == Map.UNPROBED){
@@ -133,7 +132,6 @@ public final class VoteStrategy implements Strategy {
 			if(guess.getScore() < 0.3) {
 				ChooseRandom(m);
 			} else {
-				System.out.println("Chose: " + guess.getScore());
 				Reveal(guess.x, guess.y, m);
 			}
 		}
