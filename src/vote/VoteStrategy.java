@@ -78,15 +78,12 @@ public final class VoteStrategy implements Strategy {
 			t.Reset();//Reset for votes
 		}
 		Iterator<Tile> iFringe = fringe.iterator();
+		int unprobed = 0;
 		while (iFringe.hasNext()) {
 			Tile t = iFringe.next();
-			int i = t.x - 1 < 0 ? 0 : t.x - 1;
-			int j = t.y - 1 < 0 ? 0 : t.y - 1;
-			int x = i;
-			int y = j;
-			int unprobed = 0;
-			for(;i < t.x + 1 && i < width; i++) {
-				for(;j < t.x + 1 && j < height; j++) {
+			unprobed = 0;
+			for(int i = t.x - 1;i <= t.x + 1; i++) {
+				for(int j = t.y - 1;j <= t.x + 1; j++) {
 					if(m.look(i,j) == Map.UNPROBED || m.look(i,j) == Map.MARKED){
 						unprobed++;//counting unprobed neighbors
 					}
@@ -98,8 +95,8 @@ public final class VoteStrategy implements Strategy {
 			}
 			double score = 1.0 - (m.look(t.x,t.y) / (double)unprobed);
 			System.out.println("Score: " + score + "\tNeighbors: " + unprobed);
-			for(;x <= t.x + 1 && x < width; x++) {
-				for(;y <= t.y + 1 && y < height; y++) {
+			for(int x = t.x - 1;x <= t.x + 1; x++) {
+				for(int y = t.y - 1;y <= t.y + 1; y++) {
 					if(m.look(x,y) == Map.UNPROBED){
 						if(score <= 5e-5) {//around me is bombs
 							m.mark(x,y);
@@ -162,12 +159,12 @@ public final class VoteStrategy implements Strategy {
 		Tile(int xPos, int yPos) {
 			x = xPos;
 			y = yPos;
-			votes = 1;
+			votes = 0;
 			score = 0;
 		}
 
 		void Vote(double vote) {
-			votes++;
+			this.votes += 1;
 			score += vote;
 		}
 		
