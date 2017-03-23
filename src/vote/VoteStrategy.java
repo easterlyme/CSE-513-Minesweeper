@@ -110,6 +110,9 @@ public final class VoteStrategy implements Strategy {
 	}
 
 	Tile ChooseBest() {
+		if(voteFringe.size() == 0) {
+			return null;
+		}
 		Tile out = voteFringe.get(0);
 		for(Tile t: voteFringe) {
 			if(out.getScore() < t.getScore()) {
@@ -129,7 +132,7 @@ public final class VoteStrategy implements Strategy {
 		while(!m.done()) {
 			VotePhase(m);
 			Tile guess = ChooseBest();
-			if(guess.getScore() < 0.3) {
+			if(guess == null || guess.getScore() < 0.3) {
 				ChooseRandom(m);
 			} else {
 				Reveal(guess.x, guess.y, m);
@@ -140,9 +143,9 @@ public final class VoteStrategy implements Strategy {
 				if(voteFringe.contains(board[x][y])) {
 					System.out.printf("%.1f ",board[x][y].getScore());
 				} else if (fringe.contains(board[x][y])) {
-					System.out.print("! ");
+					System.out.print("!!! ");
 				} else {
-					System.out.print("? ");
+					System.out.print("??? ");
 				}
 			}
 			System.out.println();
