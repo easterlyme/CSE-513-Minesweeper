@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="CSE-513-Minesweeper">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/pgms.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jmk.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
