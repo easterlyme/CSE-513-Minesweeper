@@ -39,6 +39,12 @@ public final class VoteStrategy implements Strategy {
 	void ChooseRandom(Map m) {
 		int x = m.pick(width);
 		int y = m.pick(height);
+/*
+		while(voteFringe.contains(board[x][y]) && total - revealed != voteFringe.size()) {
+			x = m.pick(width);
+			y = m.pick(height);
+		}
+*/
 		Reveal(x,y,m);
 	}
 
@@ -86,18 +92,21 @@ public final class VoteStrategy implements Strategy {
 		while (iFringe.hasNext()) {
 			Tile t = iFringe.next();
 			unprobed = 0;
+			int value = m.look(t.x,t.y);
 			for(int i = t.x - 1;i <= t.x + 1; i++) {
 				for(int j = t.y - 1;j <= t.y + 1; j++) {
-					if(m.look(i,j) == Map.UNPROBED || m.look(i,j) == Map.MARKED){
+					if(m.look(i,j) == Map.UNPROBED){
 						unprobed++;//counting unprobed neighbors
+					} else if(m.look(i,j) == Map.MARKED) {
+						value--;
 					}
 				}
 			}
-			if(unprobed == 0) { //remove from fringe, it's done
+			if(value == 0) { //remove from fringe, it's done
 				iFringe.remove();
 				continue;
 			}
-			double score = 1.0 - (m.look(t.x,t.y) / (double)unprobed);
+			double score = 1.0 - (value / (double)unprobed);
 			for(int x = t.x - 1;x <= t.x + 1; x++) {
 				for(int y = t.y - 1;y <= t.y + 1; y++) {
 					if(m.look(x,y) == Map.UNPROBED){
@@ -142,6 +151,7 @@ public final class VoteStrategy implements Strategy {
 				Reveal(guess.x, guess.y, m);
 			}
 		}
+		/*
 		for(int y = height -1 ; y >= 0; y --) {
 			for(int x = 0; x < width; x ++) {
 				if(voteFringe.contains(board[x][y])) {
@@ -154,6 +164,7 @@ public final class VoteStrategy implements Strategy {
 			}
 			System.out.println();
 		}
+		*/
 	}
 
 	class Tile {
