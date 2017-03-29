@@ -19,10 +19,13 @@ public final class VoteStrategy implements Strategy {
 	private ArrayList<Tile> fringe;
 	private ArrayList<Tile> voteFringe;
 	private Tile[][] board;
+	private int revealed = 0;
+	private int total = 0;
 
 	void initialize(Map m) {
 		width = m.columns();
 		height = m.rows();
+		total = width * height;
 		fringe = new ArrayList<Tile>();
 		voteFringe = new ArrayList<Tile>();
 		board = new Tile[width][height];
@@ -55,6 +58,7 @@ public final class VoteStrategy implements Strategy {
 	}
 
 	void Reveal(int x, int y, Map m) {
+		revealed++;
 		voteFringe.remove(board[x][y]);
 		fringe.add(board[x][y]);
 		int q = m.probe(x,y);
@@ -132,7 +136,7 @@ public final class VoteStrategy implements Strategy {
 		while(!m.done()) {
 			VotePhase(m);
 			Tile guess = ChooseBest();
-			if(guess == null || guess.getScore() < 0.3) {
+			if(guess == null || guess.getScore() < (double)(total - revealed) / m.mines_minus_marks()) {
 				ChooseRandom(m);
 			} else {
 				Reveal(guess.x, guess.y, m);
