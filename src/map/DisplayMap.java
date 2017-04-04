@@ -313,4 +313,10 @@ class DisplayMap extends Canvas implements Map, Runnable {
       t = null;
   }
 
+/**
+Return garbage
+*/
+  public int Revealed() {
+	return 0;
+  }
 }

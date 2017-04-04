@@ -70,6 +70,8 @@ public class PGMS extends Applet {
     int columns = 8;
     int tries = 1;
     int wins = 0;
+    int SumRevealed = 0;
+    int boardSizeSum = 0;
     int probed = 0;
 
     for (int i = 0; i < args.length; i++) // Process args
@@ -170,17 +172,26 @@ public class PGMS extends Applet {
       }
       if (m.won()) wins++;	// Record results
       if (m.probed()) probed++;
+
+      if(!m.won() && m.probed()) { //Ignore wins and games where first click fails
+		SumRevealed += m.Revealed();
+		boardSizeSum += m.rows() * m.columns();
+	}
       System.out.print(wins
 		       + " wins in "
 		       + n
 		       + " tries -- "
 		       + percent(wins, n));
-      if (probed > 0)
-	System.out.print("%, with "
+      System.out.print("%");
+      if (probed > 0) {
+	System.out.print(", with "
 			 + probed
 			 + " standard tries -- "
 			 + percent(wins, probed));
-      System.out.println("%.");
+	if(SumRevealed > 0 && boardSizeSum > 0)
+	      	System.out.print("%, with Average Board reveal: " + percent(SumRevealed, boardSizeSum) + "%");
+      }
+      System.out.println(".");
     }
   }
 

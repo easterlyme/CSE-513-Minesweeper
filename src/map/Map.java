@@ -169,4 +169,9 @@ public interface Map {
    */
   int pick(int n);
 
+  /**
+  @return               a nonnegative number for total unveiled tiles
+  */
+  int Revealed();
+
 }
