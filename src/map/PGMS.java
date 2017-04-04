@@ -177,19 +177,11 @@ public class PGMS extends Applet {
 		SumRevealed += m.Revealed();
 		boardSizeSum += m.rows() * m.columns();
 	}
-      System.out.print(wins
-		       + " wins in "
-		       + n
-		       + " tries -- "
-		       + percent(wins, n));
-      System.out.print("%");
+      System.out.printf("%d wins in %d tries -- %.2f%%", wins, n, percent(wins,n));
       if (probed > 0) {
-	System.out.print(", with "
-			 + probed
-			 + " standard tries -- "
-			 + percent(wins, probed));
+	System.out.printf(", with %d standard tries -- %.2f%%", probed, percent(wins, probed));
 	if(SumRevealed > 0 && boardSizeSum > 0)
-	      	System.out.print("%, with Average Board reveal: " + percent(SumRevealed, boardSizeSum) + "%");
+	      	System.out.printf(", with Average Board reveal: %.2f%%",percent(SumRevealed, boardSizeSum));
       }
       System.out.println(".");
     }
@@ -205,8 +197,8 @@ public class PGMS extends Applet {
     this.columns = columns;
   }
 
-  private static int percent(int n, int d) {
-    return (200 * n + d) / (2 * d);
+  private static float percent(int n, int d) {
+    return (float)(200 * n + d) / (2 * d);
   }
 
   private static void usage() {
