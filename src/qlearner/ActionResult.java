@@ -45,7 +45,7 @@ public class ActionResult {
         }
     }
 
-    public double getBombProbability(){
+    public double getBombCertainty(){
         return ((double) bombed) / ((double) count);
     }
 
@@ -64,7 +64,7 @@ public class ActionResult {
         return true;
     }
 
-    public void print(){
+    public void printLocalState(){
         for(int j = 0; j < size; j++){
             for(int i = 0; i < size; i++){
                 if(i == center && j == center){
@@ -77,5 +77,16 @@ public class ActionResult {
             }
             System.out.println();
         }
+    }
+
+    public void printDebug(){
+        System.out.print("Count=" + count);
+        System.out.print(" | ");
+        System.out.print("Bombed=" + bombed);
+        System.out.print(" | ");
+        System.out.print("Marked=" + marked);
+        System.out.print(" | ");
+        System.out.print("Empty=" + empty);
+        System.out.println();
     }
 }

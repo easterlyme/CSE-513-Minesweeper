@@ -37,7 +37,10 @@ final class Eqn implements Element {
   private int c;		// Constant term.
   private Set ps;		// Set of points.
 
-  private Eqn() {}
+  private Eqn() {
+      
+  }
+  
 
   /**
    * Construct an equation from a constant and a set of points.

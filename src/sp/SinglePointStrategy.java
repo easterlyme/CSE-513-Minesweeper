@@ -21,6 +21,7 @@ Boston, MA 02111-1307, USA.
 */
 
 import map.*;
+import qlearner.ActionHistory;
 import set.*;
 import state.GameState;
 import state.LocalState;
@@ -54,16 +55,20 @@ public final class SinglePointStrategy implements Strategy {
     public List<GameState> gameStates = new ArrayList<GameState>();
     public List<LocalState> localStates = new ArrayList<LocalState>();
 
+    private ActionHistory actionHistory;
+
   /**
    * Invoke the Single Point Strategy.
    * @see Strategy
    */
     public void play(Map m) {
+        actionHistory = PGMS.actionHistory;
+
         for (;;) {
             int y = m.pick(m.rows());
             int x = m.pick(m.columns());
             int q = m.probe(x, y);    // Guess a point to be probed
-            saveLocalState(m, x, y, q);
+            actionHistory.saveAction(m, x, y, q, false);
 
             // Opps! Bad guess
             if (Map.BOOM == q) {
@@ -74,24 +79,6 @@ public final class SinglePointStrategy implements Strategy {
 	                break;		// We win!
             }
         }
-
-        // Collections.sort(localStates, (o1, o2) -> o1.getBombProbability() < o2.getBombProbability() ? 1 : (o1.getBombProbability() > o2.getBombProbability() ? -1 : 0));
-
-        Collections.sort(localStates, (o1, o2) -> o1.bombed < o2.bombed ? 1 : o1.bombed > o2.bombed ? -1 : 0);
-
-        int i = 0;
-        for(LocalState state : localStates){
-            System.out.println(state.bombed + " | " + state.getBombProbability());
-            state.print();
-
-            if(i == 10){
-                break;
-            }
-
-            i++;
-        }
-
-        saveLocalStatesToFile();
     }
 
   /*
@@ -146,7 +133,7 @@ public final class SinglePointStrategy implements Strategy {
             for (int i = x - 1; i < x + 2; i++)
 	            if (Map.UNPROBED == m.look(i, j)){
                     m.probe(i, j);
-                    saveLocalState(m, i, j, 0);
+                    actionHistory.saveAction(m, x, y, 0, false);
                 }
 
         return adjoin_around(m, x, y, s);
@@ -161,7 +148,7 @@ public final class SinglePointStrategy implements Strategy {
             for (int i = x - 1; i < x + 2; i++)
 	            if (Map.UNPROBED == m.look(i, j)){
                     m.mark(i, j);
-                    saveLocalState(m, i, j, Map.MARKED);
+                    actionHistory.saveAction(m, x, y, Map.MARKED, false);
                 }
 
         return adjoin_around(m, x, y, s);
