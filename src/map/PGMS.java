@@ -1,5 +1,7 @@
 package map;
 
+import qlearner.ActionHistory;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.Applet;
@@ -44,6 +46,8 @@ public class PGMS extends Applet {
   int rows = 8;
   int columns = 8;
   DisplayMap m;			// Panel for map display
+
+    public static ActionHistory actionHistory = new ActionHistory(3);
 
   /**
    * Application entry point.
@@ -185,6 +189,12 @@ public class PGMS extends Applet {
       }
       System.out.println(".");
     }
+
+      //actionHistory.sortBombsDescending();
+      //actionHistory.saveToCsv("SP_bombsDescending.csv");
+
+      //actionHistory.sortBombCertaintyDescending();
+      //actionHistory.saveToCsv("SP_bombUncertaintyDescending.csv");
   }
 
   /**
