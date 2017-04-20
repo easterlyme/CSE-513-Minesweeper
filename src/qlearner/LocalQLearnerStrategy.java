@@ -4,6 +4,8 @@ import map.Map;
 import map.PGMS;
 import map.Strategy;
 
+import javax.swing.*;
+
 /**
  * Created by chewb on 3/23/2017.
  */
@@ -16,10 +18,29 @@ public class LocalQLearnerStrategy implements Strategy {
         actionHistory = PGMS.actionHistory;
 
         while(!m.done()){
-            int y = m.pick(m.rows());
-            int x = m.pick(m.columns());
-            int q = m.probe(x, y);
-            actionHistory.saveAction(m, x, y, q, false);
+            ActionResult bestResult = null;
+
+            for(int y = 0; y < m.rows(); y++){
+                for(int x = 0; x < m.columns(); x++){
+                    ActionResult existingAction = actionHistory.getExistingAction(m, x, y);
+                    if(existingAction != null && (bestResult == null || existingAction.getQValue() > bestResult.getQValue())){
+                        bestResult = existingAction;
+                    }
+                }
+            }
+
+            int q;
+
+            if(bestResult != null && m.look(bestResult.x, bestResult.y) == Map.UNPROBED && bestResult.getQValue() > 0){
+                q = m.probe(bestResult.x, bestResult.y);
+                System.out.println("Probing tile " + bestResult.x + ", " + bestResult.y + " with Q value of: " + bestResult.getQValue());
+                actionHistory.saveAction(m, bestResult.x, bestResult.y, q, false);
+            } else {
+                int x = m.pick(m.columns());
+                int y = m.pick(m.rows());
+                q = m.probe(x, y);
+                actionHistory.saveAction(m, x, y, q, false);
+            }
         }
     }
 
