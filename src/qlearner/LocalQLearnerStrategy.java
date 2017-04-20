@@ -15,7 +15,7 @@ public class LocalQLearnerStrategy implements Strategy {
 
     @Override
     public void play(Map m) {
-        actionHistory = PGMS.actionHistory;
+        actionHistory = PGMS.actionHistory3x3;
 
         while(!m.done()){
             ActionResult bestResult = null;

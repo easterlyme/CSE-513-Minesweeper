@@ -15,13 +15,15 @@ public class ActionHistory {
 
     public List<ActionResult> actionResultList = new ArrayList<>();
     public int localStateSize;
+    public boolean local;
 
-    public ActionHistory(int localStateSize){
+    public ActionHistory(int localStateSize, boolean local){
         this.localStateSize = localStateSize;
+        this.local = local;
     }
 
     public ActionResult getExistingAction(Map m, int x, int y){
-        ActionResult actionResult = new ActionResult(m, x, y, localStateSize);
+        ActionResult actionResult = new ActionResult(m, x, y, localStateSize, local);
 
         for(ActionResult a : actionResultList){
             if(a.equals(actionResult)){
@@ -34,7 +36,7 @@ public class ActionHistory {
 
     public void saveAction(Map m, int x, int y, int result, boolean debugLog){
 
-        ActionResult actionResult = new ActionResult(m, x, y, localStateSize);
+        ActionResult actionResult = new ActionResult(m, x, y, localStateSize, local);
 
         boolean foundExisiting = false;
 

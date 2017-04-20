@@ -18,15 +18,15 @@ public class QLearnerStrategy implements Strategy {
 
     @Override
     public void play(Map m) {
-        actionHistory = PGMS.actionHistory;
+        actionHistory = PGMS.actionHistory3x3;
         //System.out.println(actionHistory.actionResultList.size());
         ArrayList<Tile> fringeTiles = new ArrayList<>();
 
         Queue<Tile> corners = new LinkedList<>();
         corners.add(new Tile(0, m.rows() - 1, Map.UNPROBED));
-        corners.add(new Tile(m.columns() - 1, m.rows() - 1, Map.UNPROBED));
-        corners.add(new Tile(0, 0, Map.UNPROBED));
-        corners.add(new Tile(m.columns() - 1, 0, Map.UNPROBED));
+        //corners.add(new Tile(m.columns() - 1, m.rows() - 1, Map.UNPROBED));
+        //corners.add(new Tile(0, 0, Map.UNPROBED));
+        //corners.add(new Tile(m.columns() - 1, 0, Map.UNPROBED));
 
 
         Tile currentTile = corners.remove();
@@ -35,7 +35,7 @@ public class QLearnerStrategy implements Strategy {
         while(!m.done()){
             GetFringeTiles(m, currentTile.x, currentTile.y, fringeTiles);
 
-            currentTile = SelectTileFromFringe(m, fringeTiles);
+            currentTile = SelectTileFromFringe(m, fringeTiles, 0.95);
 
             if(currentTile == null){
                 if(!corners.isEmpty()){
@@ -50,28 +50,29 @@ public class QLearnerStrategy implements Strategy {
             }
 
             int result = m.probe(currentTile.x, currentTile.y);
-            actionHistory.saveAction(m, currentTile.x, currentTile.y, result, false);
+            PGMS.actionHistory3x3.saveAction(m, currentTile.x, currentTile.y, result, false);
+            PGMS.actionHistory5x5.saveAction(m, currentTile.x, currentTile.y, result, false);
             fringeTiles.remove(currentTile);
         }
     }
 
-    public Tile SelectTileFromFringe(Map m, ArrayList<Tile> list){
+    public Tile SelectTileFromFringe(Map m, ArrayList<Tile> list, double threshold){
         Tile bestTile = null;
-        double threshold = 0.95;
         boolean allBelowThreshold = true;
+
+        ArrayList<Tile> unknownTileStates = new ArrayList<>();
 
         for(Tile t : list){
             ActionResult exisitingState = actionHistory.getExistingAction(m, t.x, t.y);
             if(exisitingState == null || exisitingState.count < 10){
-                allBelowThreshold = false;
-                bestTile = t;
-                break;
+                unknownTileStates.add(t);
+                continue;
             }
 
             t.qValue = exisitingState.getQValue();
 
             if(t.qValue == 0){
-                m.mark(t.x, t.y);
+                // m.mark(t.x, t.y);
                 // System.out.println("Marking");
             }
 
@@ -86,8 +87,15 @@ public class QLearnerStrategy implements Strategy {
             }
         }
 
+        if(bestTile == null && unknownTileStates.size() > 0){
+            return unknownTileStates.get(0);
+        }
+
         if(allBelowThreshold){
-            return null;
+            if(threshold < 0.80){
+                return null;
+            }
+            return SelectTileFromFringe(m, list, threshold - 0.05);
         }
 
         // System.out.println("Select best tile with q value: " + bestTile.qValue);

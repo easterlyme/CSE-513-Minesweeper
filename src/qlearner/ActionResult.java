@@ -19,6 +19,8 @@ public class ActionResult {
     public int bombed = 0;
     public int empty = 0;
 
+    public boolean local;
+
     public ActionResult(int[][] state, int x, int y, int size){
         this.x = x;
         this.y = y;
@@ -27,9 +29,9 @@ public class ActionResult {
         this.localState = state;
     }
 
-    public ActionResult(Map m, int x, int y, int size){
-        if(size % 2 == 0){
-            // throw new IllegalArgumentException("size cannot be even");
+    public ActionResult(Map m, int x, int y, int size, boolean local){
+        if(local && size % 2 == 0){
+            throw new IllegalArgumentException("size cannot be even");
         }
 
         this.x = x;
@@ -37,32 +39,41 @@ public class ActionResult {
         this.size = size;
         this.center = (size - 1) / 2;
         this.localState = new int[size][size];
+        this.local = local;
 
-        for (int j = 0; j < size; j++){
-            for (int i = 0; i < size; i++){
-                this.localState[j][i] = m.look(i, size - j - 1);
+        if(!local){
+            for (int j = 0; j < size; j++){
+                for (int i = 0; i < size; i++){
+                    this.localState[j][i] = m.look(i, size - j - 1);
+                }
+            }
+        } else {
+            int j2 = 0;
+            int i2 = 0;
+
+            for (int j = y + center; j >= y - center; j--){
+                for (int i = x - center; i <= x + center; i++){
+                    if(i == x && j == y){
+                        // we don't care what this value is because it is ignored in equality check
+                        this.localState[j2][i2] = Map.UNPROBED;
+                    } else {
+                        this.localState[j2][i2] = m.look(i, j);
+                    }
+                    i2++;
+                }
+                i2 = 0;
+                j2++;
             }
         }
+
 
         /*
-        for (int j = y - center; j <= y + center; j++){
-            for (int i = x - center; i <= x + center; i++){
-                if(i == x && j == y){
-                    // we don't care what this value is because it is ignored in equality check
-                    this.localState[j2][i2] = 0;
-                } else {
-                    this.localState[j2][i2] = m.look(i, j);
-                }
-                i2++;
-            }
-            i2 = 0;
-            j2++;
-        }
+
         */
     }
 
     public double getQValue(){
-        return ((double) empty) / ((double) count);
+        return (1 - (((double) bombed * 2) / ((double) count)));
     }
 
     public double getBombCertainty(){
@@ -72,11 +83,11 @@ public class ActionResult {
     public boolean equals(ActionResult localState){
         for(int j = 0; j < size; j++){
             for(int i = 0; i < size; i++){
-                if(i == center && j == center){
-                    // continue;
+                if(local && i == center && j == center){
+                    continue;
                 }
 
-                if(localState.x == i && localState.y == size - j - 1){
+                if(!local && localState.x == i && localState.y == size - j - 1){
                     continue;
                 }
 

@@ -48,7 +48,8 @@ public class PGMS extends Applet {
     int columns = 8;
     DisplayMap m;            // Panel for map display
 
-    public static ActionHistory actionHistory = new ActionHistory(8);
+    public static ActionHistory actionHistory3x3 = new ActionHistory(3, true);
+    public static ActionHistory actionHistory5x5 = new ActionHistory(5, true);
 
     /**
      * Application entry point.
@@ -128,7 +129,8 @@ public class PGMS extends Applet {
             return;
         }
 
-        actionHistory.loadFromCsv("action_history.csv");
+        actionHistory3x3.loadFromCsv("action_history_3x3.csv");
+        actionHistory5x5.loadFromCsv("action_history_5x5.csv");
 
         if (tries == 1) {
             Frame f = new Frame("PGMS");
@@ -159,6 +161,8 @@ public class PGMS extends Applet {
             f.setVisible(true);
 
             p.start();
+            actionHistory3x3.saveToCsv("action_history_3x3.csv");
+            actionHistory5x5.saveToCsv("action_history_5x5.csv");
             return;
         }
 
@@ -188,18 +192,13 @@ public class PGMS extends Applet {
             System.out.println(".");
 
             if(n % 1000 == 0){
-                actionHistory.saveToCsv("action_history.csv");
+                actionHistory3x3.saveToCsv("action_history_3x3.csv");
+                actionHistory5x5.saveToCsv("action_history_5x5.csv");
             }
         }
 
-        System.out.println(actionHistory.actionResultList.size());
-        actionHistory.saveToCsv("action_history.csv");
-
-        //actionHistory.sortBombsDescending();
-        //actionHistory.saveToCsv("SP_bombsDescending.csv");
-
-        //actionHistory.sortBombCertaintyDescending();
-        //actionHistory.saveToCsv("SP_bombUncertaintyDescending.csv");
+        actionHistory3x3.saveToCsv("action_history_3x3.csv");
+        actionHistory5x5.saveToCsv("action_history_5x5.csv");
     }
 
     /**
@@ -317,6 +316,8 @@ public class PGMS extends Applet {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 display.start();
+                actionHistory3x3.saveToCsv("action_history_3x3.csv");
+                actionHistory5x5.saveToCsv("action_history_5x5.csv");
             }
         });
         button_panel.add(b);
