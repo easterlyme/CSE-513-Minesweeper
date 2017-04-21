@@ -161,8 +161,6 @@ public class PGMS extends Applet {
             f.setVisible(true);
 
             p.start();
-            actionHistory3x3.saveToCsv("action_history_3x3.csv");
-            actionHistory5x5.saveToCsv("action_history_5x5.csv");
             return;
         }
 
@@ -183,13 +181,16 @@ public class PGMS extends Applet {
                 SumRevealed += m.Revealed();
                 boardSizeSum += m.rows() * m.columns();
             }
-            System.out.printf("%d wins in %d tries -- %.2f%%", wins, n, percent(wins, n));
-            if (probed > 0) {
-                System.out.printf(", with %d standard tries -- %.2f%%", probed, percent(wins, probed));
-                if (SumRevealed > 0 && boardSizeSum > 0)
-                    System.out.printf(", with Average Board reveal: %.2f%%", percent(SumRevealed, boardSizeSum));
+
+            if(n % 100 == 0){
+                System.out.printf("%d wins in %d tries -- %.2f%%", wins, n, percent(wins, n));
+                if (probed > 0) {
+                    System.out.printf(", with %d standard tries -- %.2f%%", probed, percent(wins, probed));
+                    if (SumRevealed > 0 && boardSizeSum > 0)
+                        System.out.printf(", with Average Board reveal: %.2f%%", percent(SumRevealed, boardSizeSum));
+                }
+                System.out.println(".");
             }
-            System.out.println(".");
 
             if(n % 1000 == 0){
                 actionHistory3x3.saveToCsv("action_history_3x3.csv");
@@ -337,7 +338,10 @@ public class PGMS extends Applet {
     }
 
     public void start() {
-        m.start();
+        //while(true){
+            m.start();
+        //}
+
     }
 
     public void stop() {

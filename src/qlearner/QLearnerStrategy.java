@@ -4,10 +4,7 @@ import map.Map;
 import map.PGMS;
 import map.Strategy;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Created by chewb on 4/20/2017.
@@ -19,92 +16,98 @@ public class QLearnerStrategy implements Strategy {
     @Override
     public void play(Map m) {
         actionHistory = PGMS.actionHistory3x3;
-        //System.out.println(actionHistory.actionResultList.size());
+
+        double probeThreshold = 0.7;
+        double markThreshold = 0;
         ArrayList<Tile> fringeTiles = new ArrayList<>();
 
-        Queue<Tile> corners = new LinkedList<>();
-        corners.add(new Tile(0, m.rows() - 1, Map.UNPROBED));
-        //corners.add(new Tile(m.columns() - 1, m.rows() - 1, Map.UNPROBED));
-        //corners.add(new Tile(0, 0, Map.UNPROBED));
-        //corners.add(new Tile(m.columns() - 1, 0, Map.UNPROBED));
-
-
-        Tile currentTile = corners.remove();
-
+        Tile currentTile = new Tile(m.pick(m.columns()), m.pick(m.rows()), Map.UNPROBED);
         m.probe(currentTile.x, currentTile.y);
+
         while(!m.done()){
             GetFringeTiles(m, currentTile.x, currentTile.y, fringeTiles);
 
-            currentTile = SelectTileFromFringe(m, fringeTiles, 0.95);
+            // if tiles left are only in fringe, then select tiles in order of best q value
+            if(fringeTiles.size() == ((m.columns() * m.rows()) - m.Revealed())){
+                probeThreshold = 0;
+            }
 
+            currentTile = SelectTileFromFringe(m, fringeTiles, probeThreshold, markThreshold);
+
+            // select random tile if no good ones came from fringe
             if(currentTile == null){
-                if(!corners.isEmpty()){
-                    currentTile = corners.remove();
-                } else {
-                    do {
-                        int x = m.pick(m.columns() - 1);
-                        int y = m.pick(m.rows() - 1);
-                        currentTile = new Tile(x, y, m.look(x, y));
-                    } while(currentTile.state != Map.UNPROBED);
-                }
+                do {
+                    int x = m.pick(m.columns());
+                    int y = m.pick(m.rows());
+                    currentTile = new Tile(x, y, m.look(x, y));
+                } while(currentTile.state != Map.UNPROBED || fringeTiles.contains(currentTile));
             }
 
             int result = m.probe(currentTile.x, currentTile.y);
-            PGMS.actionHistory3x3.saveAction(m, currentTile.x, currentTile.y, result, false);
+            PGMS.actionHistory3x3.saveAction(m, currentTile.x, currentTile.y, result,  false);
             PGMS.actionHistory5x5.saveAction(m, currentTile.x, currentTile.y, result, false);
             fringeTiles.remove(currentTile);
         }
     }
 
-    public Tile SelectTileFromFringe(Map m, ArrayList<Tile> list, double threshold){
+    public Tile SelectTileFromFringe(Map m, ArrayList<Tile> list, double probeThreshold, double markThreshold){
+
         Tile bestTile = null;
-        boolean allBelowThreshold = true;
 
         ArrayList<Tile> unknownTileStates = new ArrayList<>();
+        ArrayList<Tile> removeTiles = new ArrayList<>();
 
         for(Tile t : list){
             ActionResult exisitingState = actionHistory.getExistingAction(m, t.x, t.y);
-            if(exisitingState == null || exisitingState.count < 10){
+
+            // only check states with some data
+            if(exisitingState == null || exisitingState.count < 5){
                 unknownTileStates.add(t);
                 continue;
             }
 
             t.qValue = exisitingState.getQValue();
 
-            if(t.qValue == 0){
-                // m.mark(t.x, t.y);
-                // System.out.println("Marking");
+            // check if should mark
+            if(t.qValue <= markThreshold){
+                if(!m.HasMine(t.x, t.y)){
+                    // don't cheat. we failed the mark so lets teach learner and fail.
+                    m.Finish();
+                    return t;
+                } else {
+                    // mark then remove tile from fringe
+                    m.mark(t.x, t.y);
+                    PGMS.actionHistory3x3.saveAction(m, t.x, t.y, Map.BOOM, false);
+                    PGMS.actionHistory5x5.saveAction(m, t.x, t.y, Map.BOOM, false);
+                    removeTiles.add(t);
+                    break;
+                }
             }
-
-            if(t.qValue < threshold){
-                continue;
-            }
-
-            allBelowThreshold = false;
 
             if(bestTile == null || t.qValue > bestTile.qValue){
                 bestTile = t;
             }
         }
 
-        if(bestTile == null && unknownTileStates.size() > 0){
+        if(removeTiles.size() > 0){
+            list.removeAll(removeTiles);
+            return SelectTileFromFringe(m, list, probeThreshold, markThreshold);
+        }
+
+        // if highest q value isn't guaranteed probed, then prioritize unknown states for sake of learning
+        if((bestTile == null || bestTile.qValue < 1) && unknownTileStates.size() > 0){
             return unknownTileStates.get(0);
         }
 
-        if(allBelowThreshold){
-            if(threshold < 0.80){
-                return null;
-            }
-            return SelectTileFromFringe(m, list, threshold - 0.05);
+        // return no tile if below threshold so that random tile can be picked
+        if(bestTile != null && bestTile.qValue < probeThreshold){
+            return null;
         }
-
-        // System.out.println("Select best tile with q value: " + bestTile.qValue);
 
         return bestTile;
     }
 
     public void GetFringeTiles(Map m, int x, int y, ArrayList<Tile> list){
-        //System.out.println("Getting fringe tiles for " + x + ", " + y);
         for(int j = 1 + y; j >= -1 + y; j--){
             for(int i = -1 + x; i <= 1 + x; i++){
                 if(i == y && j == x){
@@ -112,13 +115,12 @@ public class QLearnerStrategy implements Strategy {
                 }
 
                 int state = m.look(i, j);
-                // System.out.println(i + ", " + j + " : " + state);
+
                 if(state == Map.UNPROBED){
                     Tile tile = new Tile(i, j, state);
 
                     boolean contains = false;
                     for(Tile t : list){
-                        // System.out.println("Fringe: " + t.x + ", " + t.y);
                         if(t.x == tile.x && t.y == tile.y){
                             contains = true;
                             break;
@@ -131,7 +133,6 @@ public class QLearnerStrategy implements Strategy {
                 }
             }
         }
-        //System.out.println("Tiles in fringe: " + list.size());
     }
 
     class Tile {

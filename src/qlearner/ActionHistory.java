@@ -59,15 +59,15 @@ public class ActionHistory {
 
         if(debugLog){
             System.out.print("Saving State after selecting (" + x + ", " + y + ") with result (" + result + ")...");
-            System.out.print("Current=" + actionResult.count);
-            System.out.print(" | ");
             System.out.print("Total=" + actionResultList.size());
+            System.out.print(" | ");
+            System.out.print("Current=" + actionResult.count);
             System.out.print(" | ");
             System.out.print("Bombed=" + actionResult.bombed);
             System.out.print(" | ");
-            System.out.print("Marked=" + actionResult.marked);
-            System.out.print(" | ");
             System.out.print("Empty=" + actionResult.empty);
+            System.out.print(" | ");
+            System.out.print("QValue=" + actionResult.getQValue());
             System.out.println();
         }
 
@@ -141,15 +141,5 @@ public class ActionHistory {
         } catch (IOException e){
             e.printStackTrace();
         }
-    }
-
-    public void sortBombsDescending(){
-        // multiply by -1 to sort by descending
-        Collections.sort(actionResultList, (o1, o2) -> -1 * (o1.bombed > o2.bombed ? 1 :(o1.bombed < o2.bombed ? -1 : 0)));
-    }
-
-    public void sortBombCertaintyDescending(){
-        // multiply by -1 to sort by descending
-        Collections.sort(actionResultList, (o1, o2) -> -1 * (o1.getBombCertainty() > o2.getBombCertainty() ? 1 :(o1.getBombCertainty() < o2.getBombCertainty() ? -1 : 0)));
     }
 }

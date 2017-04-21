@@ -13,7 +13,6 @@ public class ActionResult {
     public int center;
     public int[][] localState;
     public int count = 1;
-    public int result;
 
     public int marked = 0;
     public int bombed = 0;
@@ -65,15 +64,10 @@ public class ActionResult {
                 j2++;
             }
         }
-
-
-        /*
-
-        */
     }
 
     public double getQValue(){
-        return (1 - (((double) bombed * 2) / ((double) count)));
+        return (((double) empty) / ((double) count));
     }
 
     public double getBombCertainty(){

@@ -174,4 +174,7 @@ public interface Map {
   */
   int Revealed();
 
+  boolean HasMine(int x, int y);
+
+  void Finish();
 }
