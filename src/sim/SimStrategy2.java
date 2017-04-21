@@ -170,7 +170,7 @@ public final class SimStrategy2 implements Strategy {
 			child.marked.add(t);
 			child.bombs = current.bombs + 1;
 			child.score = sumFringe(clonedMap) + score;
-			if(child.score <= best.score) {//only investigate score that are lower by marking that
+			if(child.score < best.score) {//only investigate score that are lower by marking that
 				SimulationResults next = Simulate(clonedMap, child, depth - 1, score);
 				if(next.score < best.score || (best.score == next.score && best.bombs > next.bombs)) {
 					best = next;
@@ -189,7 +189,7 @@ public final class SimStrategy2 implements Strategy {
 		ChooseRandom(m);
 		while(!m.done()) {
 			if(voteFringe.size() > 1) {
-				SimulationResults out = Simulate(m, new SimulationResults(), 4, 0);
+				SimulationResults out = Simulate(m, new SimulationResults(), 6, 0);
 				Tile chosen = out.best;
 				Reveal(chosen.x, chosen.y,m);
 			} else {
