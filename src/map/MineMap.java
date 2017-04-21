@@ -35,7 +35,7 @@ public class MineMap implements Map {
   int mmm;			// Mines minus marks
   int r;			// Rows
   int c;			// Columns
-
+  int revealed = 0;
   /* mine_map[y][x] = -1, if cell (x, y) contains a mine or
    *                   n, where n is the number of mines in adjacent cells.
    */
@@ -173,6 +173,8 @@ public class MineMap implements Map {
       return OUT_OF_BOUNDS;
     else if (mark_map[y][x])
       return MARKED;
+    if(unprobed_map[y][x])
+	revealed++;
     unprobed_map[y][x] = false;
     if (mine_map[y][x] < 0)
       finished = true;
@@ -314,5 +316,26 @@ public class MineMap implements Map {
     System.out.print("  ");
     for (int x = 0; x < c; x++)
       System.out.print(x % 10);
+  }
+
+  public MineMap Clone() {
+	MineMap out = new MineMap(0,this.r,this.c);
+	for (int y = 0; y < r; y++) {
+		for(int x = 0; x < c; x++) {
+			out.mine_map[y][x] = this.mine_map[y][x];
+			out.mark_map[y][x] = this.mark_map[y][x];
+			out.unprobed_map[y][x] = this.unprobed_map[y][x];
+		}
+	}
+	out.mmm = this.mmm;
+	out.revealed = this.revealed;
+	out.victory = this.victory;
+	out.finished = this.finished;
+	out.probed = this.probed;
+	return out;
+  }
+
+  public int Revealed() {
+	return revealed;
   }
 }

@@ -1,5 +1,7 @@
 package map;
 
+import qlearner.ActionHistory;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.Applet;
@@ -45,6 +47,8 @@ public class PGMS extends Applet {
   int columns = 8;
   DisplayMap m;			// Panel for map display
 
+    public static ActionHistory actionHistory = new ActionHistory(3);
+
   /**
    * Application entry point.
    * @param args        program arguments
@@ -70,6 +74,8 @@ public class PGMS extends Applet {
     int columns = 8;
     int tries = 1;
     int wins = 0;
+    int SumRevealed = 0;
+    int boardSizeSum = 0;
     int probed = 0;
 
     for (int i = 0; i < args.length; i++) // Process args
@@ -170,18 +176,25 @@ public class PGMS extends Applet {
       }
       if (m.won()) wins++;	// Record results
       if (m.probed()) probed++;
-      System.out.print(wins
-		       + " wins in "
-		       + n
-		       + " tries -- "
-		       + percent(wins, n));
-      if (probed > 0)
-	System.out.print("%, with "
-			 + probed
-			 + " standard tries -- "
-			 + percent(wins, probed));
-      System.out.println("%.");
+
+      if(!m.won() && m.probed()) { //Ignore wins and games where first click fails
+		SumRevealed += m.Revealed();
+		boardSizeSum += m.rows() * m.columns();
+	}
+      System.out.printf("%d wins in %d tries -- %.2f%%", wins, n, percent(wins,n));
+      if (probed > 0) {
+	System.out.printf(", with %d standard tries -- %.2f%%", probed, percent(wins, probed));
+	if(SumRevealed > 0 && boardSizeSum > 0)
+	      	System.out.printf(", with Average Board reveal: %.2f%%",percent(SumRevealed, boardSizeSum));
+      }
+      System.out.println(".");
     }
+
+      //actionHistory.sortBombsDescending();
+      //actionHistory.saveToCsv("SP_bombsDescending.csv");
+
+      //actionHistory.sortBombCertaintyDescending();
+      //actionHistory.saveToCsv("SP_bombUncertaintyDescending.csv");
   }
 
   /**
@@ -194,8 +207,8 @@ public class PGMS extends Applet {
     this.columns = columns;
   }
 
-  private static int percent(int n, int d) {
-    return (200 * n + d) / (2 * d);
+  private static float percent(int n, int d) {
+    return (float)(200 * n + d) / (2 * d);
   }
 
   private static void usage() {
