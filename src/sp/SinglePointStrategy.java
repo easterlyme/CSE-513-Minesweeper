@@ -62,7 +62,7 @@ public final class SinglePointStrategy implements Strategy {
    * @see Strategy
    */
     public void play(Map m) {
-        actionHistory = PGMS.actionHistory;
+        actionHistory = PGMS.actionHistory3x3;
 
         for (;;) {
             int y = m.pick(m.rows());

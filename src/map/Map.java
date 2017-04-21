@@ -179,4 +179,7 @@ public interface Map {
    */
    Map Clone();
 
+  boolean HasMine(int x, int y);
+
+  void Finish();
 }
