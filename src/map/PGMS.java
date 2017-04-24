@@ -50,6 +50,9 @@ public class PGMS extends Applet {
 
     public static ActionHistory actionHistory3x3 = new ActionHistory(3, true);
     public static ActionHistory actionHistory5x5 = new ActionHistory(5, true);
+    public static ActionHistory actionHistory8x8 = new ActionHistory(8, false);
+
+    public static boolean isSingleRun;
 
     /**
      * Application entry point.
@@ -130,9 +133,11 @@ public class PGMS extends Applet {
         }
 
         actionHistory3x3.loadFromCsv("action_history_3x3.csv");
-        actionHistory5x5.loadFromCsv("action_history_5x5.csv");
+        //actionHistory5x5.loadFromCsv("action_history_5x5.csv");
+        //actionHistory8x8.loadFromCsv("action_history_8x8.csv");
 
         if (tries == 1) {
+            isSingleRun = true;
             Frame f = new Frame("PGMS");
             f.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
@@ -167,6 +172,11 @@ public class PGMS extends Applet {
         System.out.print("Playing " + tries + " " + game_name + " games");
         System.out.println(" using strategy " + strategy_name);
 
+        //int states3x3 = actionHistory3x3.actionResultList.size();
+        //int states5x5 = actionHistory5x5.actionResultList.size();
+
+        isSingleRun = false;
+
         for (int n = 1; n <= tries; n++) {
             Map m = new MineMap(mines, rows, columns); // Create mine map
             try {
@@ -190,16 +200,20 @@ public class PGMS extends Applet {
                         System.out.printf(", with Average Board reveal: %.2f%%", percent(SumRevealed, boardSizeSum));
                 }
                 System.out.println(".");
+                //System.out.print("New 3x3 states: " + (actionHistory3x3.actionResultList.size() - states3x3));
+                //System.out.println(" -- New 5x5 states: " + (actionHistory5x5.actionResultList.size() - states5x5));
+                //states3x3 = actionHistory3x3.actionResultList.size();
+                //states5x5 = actionHistory5x5.actionResultList.size();
             }
 
             if(n % 1000 == 0){
                 actionHistory3x3.saveToCsv("action_history_3x3.csv");
-                actionHistory5x5.saveToCsv("action_history_5x5.csv");
+                // actionHistory5x5.saveToCsv("action_history_5x5.csv");
             }
         }
 
         actionHistory3x3.saveToCsv("action_history_3x3.csv");
-        actionHistory5x5.saveToCsv("action_history_5x5.csv");
+        // actionHistory5x5.saveToCsv("action_history_5x5.csv");
     }
 
     /**
@@ -317,8 +331,6 @@ public class PGMS extends Applet {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 display.start();
-                actionHistory3x3.saveToCsv("action_history_3x3.csv");
-                actionHistory5x5.saveToCsv("action_history_5x5.csv");
             }
         });
         button_panel.add(b);

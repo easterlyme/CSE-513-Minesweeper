@@ -52,23 +52,15 @@ import java.util.List;
  */
 public final class SinglePointStrategy implements Strategy {
 
-    public List<GameState> gameStates = new ArrayList<GameState>();
-    public List<LocalState> localStates = new ArrayList<LocalState>();
-
-    private ActionHistory actionHistory;
-
   /**
    * Invoke the Single Point Strategy.
    * @see Strategy
    */
     public void play(Map m) {
-        actionHistory = PGMS.actionHistory3x3;
-
         for (;;) {
             int y = m.pick(m.rows());
             int x = m.pick(m.columns());
             int q = m.probe(x, y);    // Guess a point to be probed
-            actionHistory.saveAction(m, x, y, q, false);
 
             // Opps! Bad guess
             if (Map.BOOM == q) {
@@ -133,7 +125,6 @@ public final class SinglePointStrategy implements Strategy {
             for (int i = x - 1; i < x + 2; i++)
 	            if (Map.UNPROBED == m.look(i, j)){
                     m.probe(i, j);
-                    actionHistory.saveAction(m, x, y, 0, false);
                 }
 
         return adjoin_around(m, x, y, s);
@@ -148,7 +139,6 @@ public final class SinglePointStrategy implements Strategy {
             for (int i = x - 1; i < x + 2; i++)
 	            if (Map.UNPROBED == m.look(i, j)){
                     m.mark(i, j);
-                    actionHistory.saveAction(m, x, y, Map.MARKED, false);
                 }
 
         return adjoin_around(m, x, y, s);
@@ -160,99 +150,5 @@ public final class SinglePointStrategy implements Strategy {
 	            if (m.look(i, j) >= 0)
 	                s = s.adjoin(new Point(i, j));
         return s;
-    }
-
-    private void saveLocalState(Map m, int x, int y, int result){
-        LocalState state = new LocalState(m, x, y, 3);
-
-        boolean foundExisiting = false;
-        for(LocalState s : localStates){
-            if(s.equals(state)){
-                state = s;
-                state.count++;
-                foundExisiting = true;
-                break;
-            }
-        }
-
-        if(result == Map.BOOM){
-            state.bombed++;
-        } else if(result == Map.MARKED){
-            state.marked++;
-        } else {
-            state.empty++;
-        }
-        // state.print();
-
-        System.out.print("Saving State after selecting (" + x + ", " + y + ") with result (" + result + ")...");
-        System.out.print("Current=" + state.count);
-        System.out.print(" | ");
-        System.out.print("Total=" + localStates.size());
-        System.out.print(" | ");
-        System.out.print("Bombed=" + state.bombed);
-        System.out.print(" | ");
-        System.out.print("Marked=" + state.marked);
-        System.out.print(" | ");
-        System.out.print("Empty=" + state.empty);
-        System.out.println();
-
-        if(!foundExisiting){
-            localStates.add(state);
-        }
-    }
-
-    private void saveLocalStatesToFile(){
-        try (PrintStream out = new PrintStream(new FileOutputStream("data.csv"))) {
-            String headerStr = "";
-            for(int j = 0; j < 3; j++){
-                for(int i = 0; i < 3; i++){
-                    headerStr += j + " " + i + ",";
-                }
-            }
-            headerStr += "bombed,marked,empty,bombprob";
-            out.println(headerStr);
-
-            for(LocalState state : localStates){
-                String rowStr = "";
-                for(int j = 0; j < 3; j++){
-                    for(int i = 0; i < 3; i++){
-                        rowStr += state.state[j][i] + ",";
-                    }
-                }
-
-                rowStr += state.bombed + "," + state.marked + "," + state.empty + "," + state.getBombProbability();
-                out.println(rowStr);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveState(Map m, int x, int y){
-        System.out.print("");
-
-        GameState state = new GameState(m);
-
-        GameState cachedState = null;
-        for(GameState s : gameStates){
-            if(s.equals(state)){
-                cachedState = s;
-                break;
-            }
-        }
-
-        if(cachedState != null){
-            cachedState.count++;
-            //System.out.println(x + ", " + y);
-            // cachedState.print();
-            //while(true);
-        } else {
-            cachedState = state;
-            gameStates.add(cachedState);
-
-        }
-        if(gameStates.size() % 10000 == 0){
-            System.out.println("Saving State after selecting (" + x + ", " + y + ")...[Current=" + cachedState.count + " | Total=" + gameStates.size() + "]");
-        }
     }
 }

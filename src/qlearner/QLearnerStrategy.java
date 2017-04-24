@@ -18,7 +18,7 @@ public class QLearnerStrategy implements Strategy {
         actionHistory = PGMS.actionHistory3x3;
 
         double probeThreshold = 0.7;
-        double markThreshold = 0;
+        double markThreshold = 0.1;
         ArrayList<Tile> fringeTiles = new ArrayList<>();
 
         Tile currentTile = new Tile(m.pick(m.columns()), m.pick(m.rows()), Map.UNPROBED);
@@ -45,7 +45,6 @@ public class QLearnerStrategy implements Strategy {
 
             int result = m.probe(currentTile.x, currentTile.y);
             PGMS.actionHistory3x3.saveAction(m, currentTile.x, currentTile.y, result,  false);
-            PGMS.actionHistory5x5.saveAction(m, currentTile.x, currentTile.y, result, false);
             fringeTiles.remove(currentTile);
         }
     }
@@ -58,7 +57,9 @@ public class QLearnerStrategy implements Strategy {
         ArrayList<Tile> removeTiles = new ArrayList<>();
 
         for(Tile t : list){
-            ActionResult exisitingState = actionHistory.getExistingAction(m, t.x, t.y);
+            //ActionResult exisitingState = null;
+
+            ActionResult exisitingState = PGMS.actionHistory3x3.getExistingAction(m, t.x, t.y);
 
             // only check states with some data
             if(exisitingState == null || exisitingState.count < 5){
@@ -66,6 +67,7 @@ public class QLearnerStrategy implements Strategy {
                 continue;
             }
 
+            t.actionState = exisitingState;
             t.qValue = exisitingState.getQValue();
 
             // check if should mark
@@ -78,7 +80,6 @@ public class QLearnerStrategy implements Strategy {
                     // mark then remove tile from fringe
                     m.mark(t.x, t.y);
                     PGMS.actionHistory3x3.saveAction(m, t.x, t.y, Map.BOOM, false);
-                    PGMS.actionHistory5x5.saveAction(m, t.x, t.y, Map.BOOM, false);
                     removeTiles.add(t);
                     break;
                 }
@@ -140,6 +141,7 @@ public class QLearnerStrategy implements Strategy {
         private int y;
         private int state;
         private double qValue = 1.0;
+        private ActionResult actionState;
 
         public Tile(int x, int y, int state){
             this.x = x;

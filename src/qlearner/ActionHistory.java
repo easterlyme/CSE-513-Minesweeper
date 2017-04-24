@@ -4,6 +4,9 @@ import map.Map;
 import state.LocalState;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 public class ActionHistory {
 
     public List<ActionResult> actionResultList = new ArrayList<>();
+    private List<ActionResult> newActionsSinceLastSave = new ArrayList<>();
     public int localStateSize;
     public boolean local;
 
@@ -73,6 +77,7 @@ public class ActionHistory {
 
         if(!foundExisiting){
             actionResultList.add(actionResult);
+            newActionsSinceLastSave.add(actionResult);
         }
     }
 
