@@ -1,7 +1,7 @@
 package sim;
 
 /**
- * This is the Voting Strategy implementation.
+ * This is the non-greedy Simulate then Choose Strategy implementation.
  * @author Jacques Breaux
  */
 
