@@ -100,19 +100,23 @@ public final class SimStrategy2 implements Strategy {
 			}
 			t.value = value;//update the value so that i can choose the best
 		}
-		int best = 100;
+		int best = 1000;
 		for (Tile t: voteFringe) {
 			int sum = 0;
+			if(m.look(t.x, t.y) == Map.MARKED) {
+				continue;
+			}
 			for(int i = t.x - 1;i <= t.x + 1; i++) {
 				for(int j = t.y - 1;j <= t.y + 1; j++) {
-					int cur = m.look(i,j);
-					if(cur > 0) {
-						sum += cur;
+					//int cur = m.look(i,j);
+					if(i < 0 || i >= board.length
+						|| j < 0 || j >= board[i].length) {
+						continue;
 					}
-					if(cur == 0) {
-						return t;
+					Tile cur = board[i][j];
+					if(cur.value > 0) {
+						sum += cur.value;
 					}
-				}
 			}
 			if (sum < best) {
 				best = sum;
