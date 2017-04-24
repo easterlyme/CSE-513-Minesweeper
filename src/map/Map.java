@@ -174,6 +174,11 @@ public interface Map {
   */
   int Revealed();
 
+  /**
+   @return 		A Clone of the map
+   */
+   Map Clone();
+
   boolean HasMine(int x, int y);
 
   void Finish();

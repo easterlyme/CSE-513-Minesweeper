@@ -253,6 +253,9 @@ class DisplayMap extends Canvas implements Map, Runnable {
         return m.probed();
     }
 
+    public Map Clone() {
+	return m.Clone();
+  }
     public int rows() {
         return m.rows();
     }

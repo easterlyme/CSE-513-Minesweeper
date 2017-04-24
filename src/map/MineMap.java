@@ -325,6 +325,23 @@ public class MineMap implements Map {
             System.out.print(x % 10);
     }
 
+  public MineMap Clone() {
+	MineMap out = new MineMap(0,this.r,this.c);
+	for (int y = 0; y < r; y++) {
+		for(int x = 0; x < c; x++) {
+			out.mine_map[y][x] = this.mine_map[y][x];
+			out.mark_map[y][x] = this.mark_map[y][x];
+			out.unprobed_map[y][x] = this.unprobed_map[y][x];
+		}
+	}
+	out.mmm = this.mmm;
+	out.revealed = this.revealed;
+	out.victory = this.victory;
+	out.finished = this.finished;
+	out.probed = this.probed;
+	return out;
+  }
+
     public int Revealed() {
         return revealed;
     }
