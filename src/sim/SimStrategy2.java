@@ -117,6 +117,7 @@ public final class SimStrategy2 implements Strategy {
 					if(cur.value > 0) {
 						sum += cur.value;
 					}
+				}
 			}
 			if (sum < best) {
 				best = sum;
